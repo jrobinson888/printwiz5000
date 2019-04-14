@@ -86,6 +86,7 @@ class Controller(object):
             if self.index == self.index_max:
                 print('Done printing')
                 finished = True
+                return delta_xyz, finished
             self.target_location = self.target_path[self.index, :]
             self._gauge_x_tar.set(self.target_location[0])
             self._gauge_y_tar.set(self.target_location[1])

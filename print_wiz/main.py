@@ -37,12 +37,17 @@ class Simulator(object):
         self.controller = Controller(self.sensor_manager)
 
     def run(self):
+        """
+        Primary run loop of the simulator.
+
+        """
         frequency_controller = 1. # Hz
         time_increment = 1. / frequency_controller
         finished = False
         time_start = time.time()
         time_prev = time_start
         while not finished:
+            time.sleep(.1)
             # sensors update their locations
             self.sensor_manager.sense_location(self.printer.current_location)
 
@@ -65,7 +70,36 @@ class Simulator(object):
                     print('current_location: %s' % self.printer.current_location)
                 time_prev = time.time()
 
-def main():
+def get_simulation():
+    """
+    Standalone printer loop test with no gui.
+
+    """
+    start_http_server(PORT_PROM)
+
+    sensor_good = Sensor('sensor_good', error_scale=.0001)
+    sensor_ok = Sensor('sensor_ok', error_scale=.05)
+    sensor_bad = Sensor('sensor_bad', error_scale=.2)
+
+    sensors = [sensor_good, sensor_ok, sensor_bad]
+
+    xyz_initial = np.array([-1., 1., 0.2])
+    sim = Simulator(xyz_initial)
+    for sensor in sensors:
+        sim.sensor_manager.add_sensor(sensor)
+    sim.sensor_manager.activate_all()
+
+    xyz_path = get_line_path()
+    sim.controller.set_target_path(xyz_path)
+    sim.controller.activate()
+
+    return sim.controller, sim.sensor_manager.get_sensors(), sim.run
+
+def main_test():
+    """
+    Standalone printer loop test with no gui.
+
+    """
     start_http_server(PORT_PROM)
 
     sensor_good = Sensor('sensor_good', error_scale=.0001)
@@ -87,4 +121,4 @@ def main():
     sim.run()
 
 if __name__ == '__main__':
-    main()
+    main_test()

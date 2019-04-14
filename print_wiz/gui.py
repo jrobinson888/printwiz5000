@@ -1,8 +1,11 @@
 # -'''- coding: utf-8 -'''-
+from threading import Thread
 import sys
 import random
 
 from PySide2 import QtCore, QtWidgets
+
+from print_wiz.main import get_simulation
 
 class PrintViewWidget(QtWidgets.QWidget):
     def __init__(self, controller):
@@ -36,6 +39,7 @@ class PrintViewWidget(QtWidgets.QWidget):
         text = QtWidgets.QLabel('Controller')
         button = QtWidgets.QCheckBox('Active')
         button.clicked.connect(self.controller.set_active)
+        button.setChecked(self.controller.active)
         self.layout.addWidget(text, 0, 0)
         self.layout.addWidget(button, 0, 1)
 
@@ -43,11 +47,12 @@ class PrintViewWidget(QtWidgets.QWidget):
             text = QtWidgets.QLabel(sensor.name)
             button = QtWidgets.QCheckBox('Active')
             button.clicked.connect(sensor.set_active)
+            button.setChecked(sensor.active)
             self.layout.addWidget(text, isensor + 1, 0)
             self.layout.addWidget(button, isensor + 1, 1)
         self.setLayout(self.layout)
 
-def main():
+def main_test():
     """
     Standalone gui test with dummy controller and sensors.
 
@@ -74,5 +79,25 @@ def main():
     widget.show()
     sys.exit(app.exec_())
 
+def main():
+    """
+    Main entry point.
+
+    """
+    app = QtWidgets.QApplication([])
+    from print_wiz import __name__ as name
+    app.setApplicationName(name)
+
+    controller, sensors, run_function = get_simulation()
+
+    thread = Thread(target=run_function, daemon=True)
+    thread.start()
+
+    widget = PrintViewWidget(controller)
+    widget.set_sensors(sensors)
+    widget.show()
+    sys.exit(app.exec_())
+
 if __name__ == '__main__':
     main()
+    #main_test()
