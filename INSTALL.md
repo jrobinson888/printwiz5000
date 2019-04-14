@@ -4,4 +4,6 @@ The package supports python 3.7 for windows. To install the package:
 
 To access the prometheus monitoring, get prometheus 2.8.1 from https://prometheus.io/download/. Run prometheus with the --config.file=[prometheus.yml](prometheus.yml)
 
-To view the Graphana dashboard, download version 6.1.3 from https://grafana.com/get. Setup the prometheus data source and import the dashboard configuration.
+To view the Graphana dashboard, download version 6.1.3 from https://grafana.com/get. Setup the prometheus data source and import the [dashboard configuration](printwiz-dashboard.json).
+
+![Graphana dashboard snapshot with y error and xyz plots](print_wiz/dashboard.png)
