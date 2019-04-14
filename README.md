@@ -14,3 +14,4 @@ Possible enhancements:
 * Use more realistic sensor data (encoder reading, laser distance, etc.) and estimation (Khalman filter)
 * More statuses and data broadcasting
 * Separate sensor and controller processes and use inter-process communication
+* UI beautification
