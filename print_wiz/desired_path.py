@@ -1,3 +1,4 @@
+# -'''- coding: utf-8 -'''-
 import numpy as np
 
 def get_cylinder_path():
@@ -36,10 +37,3 @@ def get_line_path():
     print('z_path: %s' % str(z_path.shape))
 
     return np.hstack((x_path.reshape(-1, 1), y_path.reshape(-1, 1), z_path.reshape(-1, 1)))
-
-def main():
-    get_line_path()
-    get_cylinder_path()
-
-if __name__ == '__main__':
-    main()

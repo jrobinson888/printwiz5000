@@ -1,7 +1,12 @@
+# -'''- coding: utf-8 -'''-
 import numpy as np
 from prometheus_client import Gauge
 
 class Controller(object):
+    """
+    Controller that recieves sensor information and gives move commands.
+
+    """
     def __init__(self, sensor_manager, tol_target=0.05):
         """
         Initialize Controller.
@@ -31,10 +36,6 @@ class Controller(object):
 
         self.active = False
         self.finished = False
-
-    @property
-    def nsensors(self):
-        return len(self.sensors)
 
     def activate(self):
         """

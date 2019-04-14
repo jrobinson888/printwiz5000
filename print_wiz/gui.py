@@ -8,7 +8,20 @@ from PySide2 import QtCore, QtWidgets
 from print_wiz.main import get_simulation
 
 class PrintViewWidget(QtWidgets.QWidget):
+    """
+    Widget to control the state of the controller and sensors.
+
+    """
     def __init__(self, controller):
+        """
+        Initialize widget with controller.
+
+        Parameters
+        -----------
+        controller : Controller
+            Controller.
+
+        """
         QtWidgets.QWidget.__init__(self)
 
         self.controller = controller

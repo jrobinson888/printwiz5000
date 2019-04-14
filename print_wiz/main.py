@@ -1,7 +1,6 @@
+# -'''- coding: utf-8 -'''-
 import time
 
-import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 import numpy as np
 from prometheus_client import start_http_server
 
