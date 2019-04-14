@@ -4,6 +4,7 @@ This package impliments a simple simulation example of a 3D printer controller w
 controls the state of the controller and sensors. An example of 3 sensors with various levels of
 noramally distributed random noise and a simple averging estimator is given. Various locations are
 broadcast to a Promethues server on the localhost port 8000. A sample wall path is given.
+
 ![xz plot of waypoints for example wall path](print_wiz/waypoints.png)
 
 Possible enhancements:
