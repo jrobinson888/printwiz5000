@@ -1,5 +1,8 @@
 # printwiz5000
 
+![control diagram of printer controller and sensors](diagrams/data_flow.png)
+
+
 print_wiz is a python 3.7 compatible package that impliments a simple simulation example of a 3D printer controller with sensors. A GUI
 controls the state of the controller and sensors. An example of 3 sensors with various levels of
 noramally distributed random noise and a simple averging estimator is given. Various locations are
@@ -15,3 +18,6 @@ Possible enhancements:
 * More statuses and data broadcasting
 * Separate sensor and controller processes and use inter-process communication
 * UI beautification
+
+
+diagram made with https://www.draw.io/
