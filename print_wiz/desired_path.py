@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 import numpy as np
 
 def get_cylinder_path():
@@ -20,10 +18,28 @@ def get_cylinder_path():
     print('y_path: %s' % str(y_path.shape))
     print('z_path: %s' % str(z_path.shape))
 
-    fig = plt.figure()
-    axes = fig.add_subplot(111, projection='3d')
-    axes.plot3D(x_path, y_path, z_path, 'k-')
-    axes.plot3D(x_path, y_path, z_path, 'ro')
-    fig.savefig('path.png')
-
     return x_path, y_path, z_path
+
+def get_line_path():
+    thickness_layer = .01
+    nlayers = 10
+    length = 5.
+
+    nwaypoints = 20
+
+    x_path = np.tile(np.hstack((np.linspace(0., length, nwaypoints), np.linspace(length, 0., nwaypoints))), (1, nlayers)).ravel()
+    y_path = np.zeros_like(x_path).ravel()
+    z_path = np.hstack((np.ones(nwaypoints) * thickness_layer * i for i in range(2 * nlayers)))
+
+    print('x_path: %s' % str(x_path.shape))
+    print('y_path: %s' % str(y_path.shape))
+    print('z_path: %s' % str(z_path.shape))
+
+    return np.hstack((x_path.reshape(-1, 1), y_path.reshape(-1, 1), z_path.reshape(-1, 1)))
+
+def main():
+    get_line_path()
+    get_cylinder_path()
+
+if __name__ == '__main__':
+    main()

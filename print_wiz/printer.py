@@ -1,4 +1,5 @@
 import numpy as np
+from prometheus_client import Gauge
 
 class Printer(object):
     def __init__(self, xyz_initial):
@@ -17,6 +18,10 @@ class Printer(object):
         self.active = False
         self.error_rate = 0.2
         self.error_std = 0.5
+
+        self._gauge_x = Gauge('printer_x', 'Printer x location')
+        self._gauge_y = Gauge('printer_y', 'Printer y location')
+        self._gauge_z = Gauge('printer_z', 'Printer z location')
 
     def activate(self):
         """
@@ -39,6 +44,11 @@ class Printer(object):
         """
         if self.active:
             self.current_location = self.next_location.copy()
+            self._gauge_x.set(self.current_location[0])
+            self._gauge_y.set(self.current_location[1])
+            self._gauge_z.set(self.current_location[2])
+        else:
+            print('Printer not active. Not moving.')
 
     def move_by(self, delta_xyz):
         """
