@@ -1,11 +1,10 @@
 # -'''- coding: utf-8 -'''-
 from threading import Thread
 import sys
-import random
 
 from PySide2 import QtCore, QtWidgets
 
-from print_wiz.main import get_simulation
+from print_wiz.simulator import get_simulation
 
 class PrintViewWidget(QtWidgets.QWidget):
     """
