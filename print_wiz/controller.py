@@ -1,13 +1,17 @@
 # -'''- coding: utf-8 -'''-
+import time
+
 import numpy as np
 from prometheus_client import Gauge
+
+from print_wiz.client import send_request
 
 class Controller(object):
     """
     Controller that recieves sensor information and gives move commands.
 
     """
-    def __init__(self, sensor_manager, tol_target=0.05):
+    def __init__(self, host, port, tol_target=0.05):
         """
         Initialize Controller.
 
@@ -17,8 +21,11 @@ class Controller(object):
             Tolerance in absolute distance at which the target is considered reached.
 
         """
-        self.sensor_manager = sensor_manager
+        self.host = host
+        self.port = port
         self.tol_target = tol_target
+
+        self.frequency = 1. # Hz
 
         self.target_location = None
         self.target_path = None
@@ -68,7 +75,7 @@ class Controller(object):
         self._gauge_z_est.set(xyz_estimated[2])
         return xyz_estimated
 
-    def execute(self):
+    def run(self):
         """
         Execute the Controller loop.
 
@@ -80,22 +87,32 @@ class Controller(object):
             True if the printer has reached the final location successfully.
 
         """
+        time_increment = 1. / self.frequency
+        time_start = time.time()
+        time_prev = time_start
+
         delta_xyz = None
         finished = False
-        if self.hit_target():
-            self.index += 1
-            if self.index == self.index_max:
-                print('Done printing')
-                finished = True
-                return delta_xyz, finished
-            self.target_location = self.target_path[self.index, :]
-            self._gauge_x_tar.set(self.target_location[0])
-            self._gauge_y_tar.set(self.target_location[1])
-            self._gauge_z_tar.set(self.target_location[2])
-            print('controller.set_target_location: %s' % self.target_location)
-        else:
-            delta_xyz = self.get_move_command()
-        return delta_xyz, finished
+        while not finished:
+            time.sleep(0.1)
+            time_now = time.time()
+            time_step = time_now - time_prev
+            if self.active and time_step >= time_increment:
+                if self.hit_target():
+                    self.index += 1
+                    if self.index == self.index_max:
+                        print('Done printing')
+                        finished = True
+                        continue
+                    self.target_location = self.target_path[self.index, :]
+                    self._gauge_x_tar.set(self.target_location[0])
+                    self._gauge_y_tar.set(self.target_location[1])
+                    self._gauge_z_tar.set(self.target_location[2])
+                    print('controller.set_target_location: %s' % self.target_location)
+                else:
+                    delta_xyz = self.get_move_command()
+                    send_request(self.host, self.port, 'move', data=delta_xyz)
+                time_prev = time_now
 
     def get_move_command(self):
         """
@@ -116,7 +133,7 @@ class Controller(object):
 
     def hit_target(self):
         """
-        Determine if the current targert location has been hit.
+        Determine if the current target location has been hit.
 
         """
         return np.linalg.norm(self.estimate_current_location() - self.target_location) < self.tol_target
@@ -126,7 +143,7 @@ class Controller(object):
         Poll all of the sensors for their readings.
 
         """
-        return self.sensor_manager.poll_sensors()
+        return send_request(self.host, self.port, 'poll')
 
     def set_active(self, active):
         """
@@ -139,6 +156,8 @@ class Controller(object):
 
         """
         self.active = active
+        msg = 'on' if self.active else 'off'
+        print('controller %s' % msg)
 
     def set_target_path(self, target_path):
         """

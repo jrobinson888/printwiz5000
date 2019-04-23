@@ -61,8 +61,9 @@ class Printer(object):
            <3,> array of the offset from the current location to set the next location.
 
         """
+        delta_xyz_ = delta_xyz.copy()
         index_error = 1 # y axis error
         if np.random.random() < self.error_rate:
-            delta_xyz[index_error] += np.random.normal(scale=self.error_std)
-        self.next_location += delta_xyz
+            delta_xyz_[index_error] += np.random.normal(scale=self.error_std)
+        self.next_location += delta_xyz_
         #TODO: check the next location is within bounds

@@ -4,7 +4,13 @@ import sys
 
 from PySide2 import QtCore, QtWidgets
 
+from print_wiz.controller import Controller
+from print_wiz.desired_path import get_line_path
 from print_wiz.simulator import get_simulation
+from print_wiz.server import start_server
+
+HOST = 'localhost'
+PORT_SIM = 9999
 
 class PrintViewWidget(QtWidgets.QWidget):
     """
@@ -100,10 +106,21 @@ def main():
     from print_wiz import __name__ as name
     app.setApplicationName(name)
 
-    controller, sensors, run_function = get_simulation()
+    simulator, sensors, run_function = get_simulation()
 
-    thread = Thread(target=run_function, daemon=True)
-    thread.start()
+    thread_simulator = Thread(target=run_function, daemon=True)
+    thread_simulator.start()
+
+    thread_server = Thread(target=start_server, daemon=True, args=(HOST, PORT_SIM, simulator))
+    thread_server.start()
+
+    xyz_path = get_line_path()
+    controller = Controller(HOST, PORT_SIM)
+    controller.set_target_path(xyz_path)
+    #controller.activate()
+
+    thread_controller = Thread(target=controller.run, daemon=True)
+    thread_controller.start()
 
     widget = PrintViewWidget(controller)
     widget.set_sensors(sensors)
